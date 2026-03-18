@@ -25,14 +25,9 @@
           password:''
         },
         rules: {
-        // 用户名的验证规则
         username: [
-          // required: true 表示必填
-          // message: 验证失败时显示的消息
-          // trigger: 'blur' 表示失去焦点时验证（输入框点别处）
           { required: true, message: '请输入账号', trigger: 'blur' }
         ],
-        // 密码的验证规则
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' }
         ]
