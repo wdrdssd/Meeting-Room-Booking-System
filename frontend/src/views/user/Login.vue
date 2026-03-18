@@ -41,10 +41,10 @@
             console.log(this.LoginForm)
             if(this.LoginForm.username == 'admin'&& this.LoginForm.password === '123456'){
               this.$message.success('管理员登录成功')
-              this.$router.push('/admin/homepage')
+              this.$router.push('/admin')
             }else{
               this.$message.success('登录成功')
-              this.$router.push('/user/homepage')
+              this.$router.push('/user')
             }
           }
         })
