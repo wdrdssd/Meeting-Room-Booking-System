@@ -9,7 +9,7 @@ const router = new VueRouter({
     routes:[
         { name:'login',path:'/login',component:()=>import('../views/user/Login.vue')},
         { path: '/', redirect: '/login' },
-        { name:'userHomepage',path:'/user',component:()=>import('../views/user/Homepage.vue'),
+        { path:'/user',component:()=>import('../views/user/Homepage.vue'),
             children:[
                 {
                 path:'calender',
@@ -22,13 +22,18 @@ const router = new VueRouter({
                 component:()=>import('../views/user/Myself.vue')
                 },
                 {
+                path:'my-reservations',
+                name:'MyReservations',
+                component:()=>import('../views/user/MyReservations.vue')
+                },
+                {
                     path:'',
                     redirect:'calender'
                 }
             ]
         },
         { name:'adminHomepage',path:'/admin',component:()=>import('../views/admin/Homepage.vue')},
-    ],
+ ],
     linkActiveClass:'on'
 })
 export default router
