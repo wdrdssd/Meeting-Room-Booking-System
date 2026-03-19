@@ -19,7 +19,7 @@ const router = new VueRouter({
                 {
                 path:'myself',
                 name:'myself',
-                component:()=>import('../views/user/Myself.vue')
+                component:()=>import('../views/user/Profile.vue')
                 },
                 {
                 path:'my-reservations',
