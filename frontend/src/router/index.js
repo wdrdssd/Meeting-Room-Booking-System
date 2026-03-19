@@ -17,8 +17,8 @@ const router = new VueRouter({
                 component:()=>import('../views/user/Calendar.vue')
                 },
                 {
-                path:'myself',
-                name:'myself',
+                path:'profile',
+                name:'profile',
                 component:()=>import('../views/user/Profile.vue')
                 },
                 {

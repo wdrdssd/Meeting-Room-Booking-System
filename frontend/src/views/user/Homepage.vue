@@ -13,7 +13,7 @@
                     <i class="el-icon-tickets"></i>
                     <span>我的预约</span>
                 </el-menu-item>
-                <el-menu-item index="/user/myself">
+                <el-menu-item index="/user/profile">
                     <i class="el-icon-user"></i>
                     <span>个人中心</span>
                 </el-menu-item>
@@ -31,7 +31,7 @@
                             {{ username }}<i class="el-icon-arrow-down"></i>
                         </span>
                         <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item command="myself">个人中心</el-dropdown-item>
+                            <el-dropdown-item command="profile">个人中心</el-dropdown-item>
                             <el-dropdown-item command="logout">退出登录</el-dropdown-item>
                         </el-dropdown-menu>
                     </el-dropdown>
@@ -58,7 +58,7 @@
                 const path = this.$route.path
                 if(path.includes('calender'))return'日历视图'
                 if(path.includes('my-reservations'))return'我的预约'
-                if(path.includes('myself'))return'个人中心'
+                if(path.includes('profile'))return'个人中心'
                 return '会议室预约系统'
             }
         },
@@ -69,8 +69,8 @@
             handleCommand(command){
                 if(command == 'logout'){
                     this.logout()
-                }else if(command == 'myself'){
-                    this.$router.push('/user/myself')
+                }else if(command == 'profile'){
+                    this.$router.push('/user/profile')
                 }
             },
             logout(){
