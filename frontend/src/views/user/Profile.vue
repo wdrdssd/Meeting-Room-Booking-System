@@ -1,5 +1,5 @@
 <template>
-    <div class="box">
+    <div class="profile-box">
         <el-row :gutter="20">
             <el-col :span="8">
                 <el-card class="user-card">
@@ -111,7 +111,7 @@
 </script>
 
 <style >
-.box{
+.profile-box{
     padding: 10px;
 }
 .user-card{

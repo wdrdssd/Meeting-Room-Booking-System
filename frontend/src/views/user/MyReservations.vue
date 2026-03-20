@@ -1,5 +1,5 @@
 <template>
-    <div class="box">
+    <div class="m-r-box">
         <el-tabs v-model="activeTab" @tab-click="handleClick">
             <el-tab-pane label="进行中" name="ongoing"></el-tab-pane>
             <el-tab-pane label="待开始" name="upcoming"></el-tab-pane>
@@ -176,7 +176,7 @@
 </script>
 
 <style>
-.box{
+.m-r-box{
     background-color: white;
     padding: 20px;
     border-radius: 4px;

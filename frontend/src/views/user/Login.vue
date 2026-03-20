@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <div class="loginBox">
     <h1 class="title">会议室预约系统</h1>
     <el-form ref="LoginForm" :model="LoginForm" :rules="rules">
       <el-form-item prop="username" style="margin-top: 100px;">
@@ -54,7 +54,7 @@
 </script>
 
 <style >
-.box{
+.loginBox{
   width: 500px;
   height: 400px;
   margin: 150px auto;
