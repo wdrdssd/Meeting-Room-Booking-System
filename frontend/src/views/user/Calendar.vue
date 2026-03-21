@@ -194,6 +194,11 @@
       submit(){
         this.$refs.form.validate(valid=>{
           if(valid){
+            const hasConflict = this.checkConflict();
+            if(hasConflict){
+              this.$message.error('该会议室在此时间段已被预约，请选择其他时间或会议室！')
+              return false
+            }
             console.log('预约信息:',this.form);
             this.$message.success(`预约成功！`);
             this.dialogVisible = false;
@@ -216,6 +221,22 @@
       getRoomName(roomId){
         const room = this.rooms.find(r => r.id === roomId);
         return room.name
+      },
+      checkConflict(){
+        const newDate = this.form.date;
+        const newRoom = this.form.room;
+        const newStart = this.form.startTime;
+        const newEnd = this.form.endTime;
+        const conflict = this.reservations.some(reservations =>{
+          if(reservations.date === newDate && reservations.room === newRoom){
+            const existingStart = reservations.startTime;
+            const existingEnd = reservations.endTime;
+            const isOverlap = (newStart<existingEnd) &&(newEnd>existingStart);
+            return isOverlap
+          }
+          return false
+        });
+        return conflict
       }
     }
   }
