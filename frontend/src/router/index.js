@@ -12,8 +12,8 @@ const router = new VueRouter({
         { path:'/user',component:()=>import('../views/user/Homepage.vue'),
             children:[
                 {
-                path:'calender',
-                name:'calender',
+                path:'calendar',
+                name:'calendar',
                 component:()=>import('../views/user/Calendar.vue')
                 },
                 {

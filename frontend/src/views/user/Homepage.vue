@@ -5,7 +5,7 @@
                 <h2>会议室系统</h2>
             </div>
             <el-menu :default-active="activeMenu" class="menu" router background-color="#304156" text-color="#fff" active-text-color="#ffd046">
-                <el-menu-item index="/user/calender">
+                <el-menu-item index="/user/calendar">
                     <i class="el-icon-date"></i>
                     <span>日历视图</span>
                 </el-menu-item>
@@ -56,7 +56,7 @@
         computed:{
             pageTitle(){
                 const path = this.$route.path
-                if(path.includes('calender'))return'日历视图'
+                if(path.includes('calendar'))return'日历视图'
                 if(path.includes('my-reservations'))return'我的预约'
                 if(path.includes('profile'))return'个人中心'
                 return '会议室预约系统'

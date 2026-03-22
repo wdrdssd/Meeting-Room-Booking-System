@@ -1,30 +1,32 @@
 <template>
   <div class="loginBox">
     <h1 class="title">会议室预约系统</h1>
-    <el-form ref="LoginForm" :model="LoginForm" :rules="rules">
+   <el-form ref="loginForm" :model="loginForm" :rules="rules">
       <el-form-item prop="username" style="margin-top: 100px;">
-        <el-input v-model="LoginForm.username" placeholder="请输入账号" prefix-icon="el-icon-user"></el-input>
+        <el-input v-model="loginForm.username" placeholder="请输入账号" prefix-icon="el-icon-user"></el-input>
       </el-form-item>
       <el-form-item prop="password" style="margin-top: 50px;">
-        <el-input v-model="LoginForm.password" show-password placeholder="请输入密码" prefix-icon="el-icon-lock"></el-input>
+        <el-input v-model="loginForm.password" show-password placeholder="请输入密码" prefix-icon="el-icon-lock"></el-input>
       </el-form-item>
       <el-form-item style="margin-top: 50px;">
-        <el-button type="primary" style="margin-left: 200px;" @click="yanzheng">登录</el-button>
+        <el-button type="primary" style="margin-left: 200px;" @click="handleLogin">登录</el-button>
       </el-form-item>
-      </el-form>
-      </div>
+    </el-form>
+  </div>
 </template>
 
 <script>
-  export default {
-    name:'LoginPage',
-    data() {
-      return {
-        LoginForm:{
-          username:'',
-          password:''
-        },
-        rules: {
+import request from '@/utils/request';
+
+export default {
+  name: 'LoginPage',
+  data() {
+    return {
+      loginForm: {
+        username: '',
+        password: ''
+      },
+      rules: {
         username: [
           { required: true, message: '请输入账号', trigger: 'blur' }
         ],
@@ -32,40 +34,59 @@
           { required: true, message: '请输入密码', trigger: 'blur' }
         ]
       }
-      }
-    },
-    methods:{
-      yanzheng(){
-        this.$refs.LoginForm.validate(valid =>{
-          if(valid){
-            console.log(this.LoginForm)
-            if(this.LoginForm.username == 'admin'&& this.LoginForm.password === '123456'){
-              this.$message.success('管理员登录成功')
-              this.$router.push('/admin')
-            }else{
+    }
+  },
+  methods: {
+    async handleLogin() {      
+      this.$refs.loginForm.validate(async (valid) => {
+        if (valid) {
+          try {           
+            const res = await request.post('/login', {
+              username: this.loginForm.username,
+              password: this.loginForm.password
+            })
+            
+            console.log('登录响应：', res)
+            
+            if (res.code === 200) {
+              localStorage.setItem('token', res.data.token)
+              localStorage.setItem('user', JSON.stringify(res.data.user))
+              
               this.$message.success('登录成功')
-              this.$router.push('/user')
+
+              if (res.data.user.role === 1) {
+                this.$router.push('/admin')
+              } else {
+                this.$router.push('/user/calendar')
+              }
+            } else {
+              this.$message.error(res.msg || res.message || '登录失败')
             }
+          } catch (error) {
+            console.error('登录错误：', error)
+            this.$message.error('登录失败，请检查网络或后端服务')
           }
-        })
-      }
+        } else {
+          console.log('表单验证失败')
+          return false
+        }
+      })
     }
   }
+}
 </script>
 
-<style >
-.loginBox{
+<style scoped>
+.loginBox {
   width: 500px;
   height: 400px;
   margin: 150px auto;
   border: 2px solid #ccc;
   padding: 50px;
 }
-.box .title{
+
+.title {
   text-align: center;
   margin-top: 10px;
 }
-
-
-
 </style>
