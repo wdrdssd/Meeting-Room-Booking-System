@@ -392,7 +392,7 @@ export default {
   getDisplayStatusType(reservation) {
     const status = this.getActualStatus(reservation)
     const typeMap = {
-      'completed': 'info',      
+      'completed': 'primary',      
       'ongoing': 'warning',     
       'booked': 'success',      
       'cancelled': 'info'      
@@ -410,6 +410,34 @@ export default {
       'cancelled': '已取消'
     }
     return textMap[status] || '未知'
+  },
+
+  checkRebookParams() {
+    const { date, roomId, title, startTime, endTime } = this.$route.query
+    if (date && roomId && title) {
+      this.$nextTick(() => {
+        this.value = new Date(date)
+        this.openDialogWithData(date, roomId, title, startTime, endTime)
+      })
+    }
+  },
+
+  openDialogWithData(date, roomId, title, startTime, endTime) {
+    this.dialogVisible = false
+    this.currentSelectedDate = date
+    this.form.date = date
+    this.form.title = title || ''
+    this.form.roomId = parseInt(roomId)
+    this.form.startTime = startTime || ''
+    this.form.endTime = endTime || ''
+    this.form.name = this.currentUser?.name || ''
+    this.form.remark = ''
+    this.conflictMessage = ''
+    this.hasConflict = false
+
+    this.dialogVisible = true
+
+    this.$router.replace({ query: {} })
   }
 },
   
@@ -423,6 +451,7 @@ export default {
     this.getCurrentUser()
     this.loadRooms()
     this.loadReservations()
+    this.checkRebookParams()
   }
 }
 </script>
