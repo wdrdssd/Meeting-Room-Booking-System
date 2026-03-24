@@ -32,7 +32,15 @@ const router = new VueRouter({
                 }
             ]
         },
-        { name:'adminHomepage',path:'/admin',component:()=>import('../views/admin/Homepage.vue')},
+        { path:'/admin',component:()=>import('../views/admin/Homepage.vue'),
+            meta: { requiresAdmin: true },
+            children: [
+                { path: 'rooms', name: 'RoomManage', component: () => import('../views/admin/RoomManage.vue') },
+                { path: 'approvals', name: 'Approval', component: () => import('../views/admin/Approval.vue') },
+                { path: 'statistics', name: 'Statistics', component: () => import('../views/admin/Statistics.vue') },
+                { path: '', redirect: 'rooms' }
+            ]
+        },
  ],
     linkActiveClass:'on'
 })
