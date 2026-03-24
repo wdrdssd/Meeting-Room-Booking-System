@@ -6,8 +6,9 @@
           <el-button type="text" v-if="data.type === 'current-month' && hasReservations(data.day)"
             size="mini" class="chakan-btn"
             @click="TodayDialog(data.day)">查看预约</el-button>
-          <el-button v-if="data.type === 'current-month'" type="text" size="mini" class="calendar-btn"  
-          @click="openDialog(data.day)">+ 预约</el-button>
+          <el-button v-if="data.type === 'current-month' && canReserve(data.day)" type="text" 
+            size="mini" class="calendar-btn"  
+            @click="openDialog(data.day)">+ 预约</el-button>
       </template>
     </el-calendar>
     
@@ -16,8 +17,8 @@
         <div class="today-card" v-for="(appointment,index) in currentAppointments" :key="index">
           <div class="today-header">
             <h3>{{ appointment.title }}</h3>
-            <el-tag :type="appointment.status === '1' ? 'success' : 'info'" size="small">
-              {{ getStatusText(appointment.status) }}
+            <el-tag :type="getDisplayStatusType(appointment)" size="small">
+              {{ getDisplayStatusText(appointment) }}
             </el-tag>
           </div>
           <div class="today-info">
@@ -69,7 +70,7 @@
           </el-form-item>
           <el-form-item label="开始时间" prop="startTime">
             <el-time-select v-model="form.startTime" 
-              :picker-options="{start: '08:00',step: '00:30',end: '20:00'}" 
+              :picker-options="timePick" 
               placeholder="选择开始时间"
               @change="checkConflict">
             </el-time-select>
@@ -87,8 +88,7 @@
           <el-form-item label="备注" prop="remark">
             <el-input v-model="form.remark" placeholder="请输入备注信息" :rows="3" type="textarea"></el-input>
           </el-form-item>
-          
-          <!-- 冲突提示 -->
+
           <div v-if="conflictMessage" class="conflict-message">
             <i class="el-icon-warning"></i> {{ conflictMessage }}
           </div>
@@ -151,8 +151,59 @@ export default {
       }
     }
   },
-  
+  computed:{
+    now(){
+      return new Date()
+    },
+    todayStr(){
+      const date = new Date()
+      return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`
+    },
+    oneMonthLater(){
+      const date = new Date()
+      date.setMonth(date.getMonth() + 1)
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+    },
+    timePick(){
+      if(this.form.date === this.todayStr){
+        const now = new Date()
+        const currentHour = now.getHours()
+        const currentMinute = now.getMinutes()
+
+        let startHour = currentHour
+        let startMinute = currentMinute <= 30 ? 30 : 60
+        if (startMinute === 60) {
+          startHour += 1
+          startMinute = 0
+        }
+        const minTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`
+        return {
+          start: minTime,
+          step: '00:30',
+          end: '20:00'
+        }
+      }
+       return {
+        start: '08:00',
+        step: '00:30',
+        end: '20:00'
+      };
+      }
+    },
+
   methods: {
+    canReserve(day){
+      if(day > this.oneMonthLater){
+        return false
+      }
+      if(day< this.todayStr){
+        return false
+      }
+      return true
+    },
+    isToday(dateStr) {
+      return dateStr === this.todayStr
+    },
     getCurrentUser() {
       const userStr = localStorage.getItem('user')
       if (userStr) {
@@ -182,7 +233,7 @@ export default {
         
         const res = await request.get('/reservations/calendar', { params: { year, month } })
         if (res.code === 200) {
-          this.reservations = res.data
+          this.reservations = res.data.filter(item => item.status === '1' || item.status === '2' || item.status === '3')
           console.log('预约数据：', this.reservations)
         }
       } catch(error) {
@@ -193,6 +244,22 @@ export default {
     openDialog(day) {
       this.currentSelectedDate = day;
       this.form.date = day;
+      if (this.isToday(day)) {
+        const now = new Date()
+        const currentHour = now.getHours()
+        const currentMinute = now.getMinutes()
+        let startHour = currentHour
+        let startMinute = currentMinute <= 30 ? 30 : 60
+        if (startMinute === 60) {
+          startHour += 1
+          startMinute = 0
+        }
+        this.form.startTime = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`
+        this.form.endTime = ''
+      } else {
+        this.form.startTime = ''
+        this.form.endTime = ''
+      }
       this.form.startTime = '';
       this.form.title = '';
       this.form.roomId = this.rooms[0]?.id || '';
@@ -203,8 +270,7 @@ export default {
       this.hasConflict = false;
       this.dialogVisible = true;
     },
-    
-    // ✅ 修复 checkConflict
+
     checkConflict() {
       if (!this.form.roomId || !this.form.startTime || !this.form.endTime) {
         this.conflictMessage = '';
@@ -213,12 +279,11 @@ export default {
       }
       
       const newDate = this.form.date;
-      const newRoom = this.form.roomId;  // ✅ 修复：使用 roomId
+      const newRoom = this.form.roomId;  
       const newStart = this.form.startTime;
       const newEnd = this.form.endTime;
       
       const conflict = this.reservations.some(reservation => {
-        // ✅ 使用 reserveDate 和 roomId
         if (reservation.reserveDate === newDate && reservation.roomId === newRoom) {
           const existingStart = reservation.startTime;
           const existingEnd = reservation.endTime;
@@ -236,15 +301,13 @@ export default {
         this.hasConflict = false;
       }
     },
-    
-    // ✅ 修复 submit
+
     async submit() {
       this.$refs.form.validate(async (valid) => {
         if (valid) {
           try {
-            // 先检查冲突
             const checkRes = await request.post('/reservations/check', {
-              roomId: this.form.roomId,  // ✅ 修复：使用 roomId
+              roomId: this.form.roomId,  
               date: this.form.date,
               startTime: this.form.startTime,
               endTime: this.form.endTime
@@ -254,10 +317,9 @@ export default {
               this.$message.error('该时间段已被预约，请选择其他时间')
               return
             }
-            
-            // 创建预约
+
             const creatRes = await request.post('/reservations', {
-              roomId: this.form.roomId,  // ✅ 修复：使用 roomId
+              roomId: this.form.roomId,  
               title: this.form.title,
               date: this.form.date,
               startTime: this.form.startTime,
@@ -265,7 +327,7 @@ export default {
             })
             
             if (creatRes.code === 200) {
-              this.$message.success('预约成功')
+              this.$message.success('预约申请已提交，请等待审批')
               this.dialogVisible = false
               this.loadReservations()
             } else {
@@ -299,17 +361,57 @@ export default {
       return room ? (room.roomName || room.name) : '未知会议室';
     },
     
-    getStatusText(status) {
-      const statusMap = {
-        '0': '已取消',
-        '1': '已预约',
-        '2': '进行中',
-        '3': '已完成',
-        '4': '待审批'
+    getActualStatus(reservation) {
+      const now = new Date()
+      const reserveDate = new Date(reservation.reserveDate)
+      const startTime = reservation.startTime.split(':')
+      const endTime = reservation.endTime.split(':')
+  
+      const startDateTime = new Date(reserveDate)
+      startDateTime.setHours(parseInt(startTime[0]), parseInt(startTime[1]), 0)
+  
+      const endDateTime = new Date(reserveDate)
+      endDateTime.setHours(parseInt(endTime[0]), parseInt(endTime[1]), 0)
+
+      if (reservation.status === '0') {
+        return 'cancelled'
       }
-      return statusMap[status] || '已预约'
-    }
+
+      if (now > endDateTime) {
+        return 'completed'
+      }
+
+      if (now >= startDateTime && now < endDateTime) {
+        return 'ongoing'
+      }
+
+      return 'booked'
   },
+
+
+  getDisplayStatusType(reservation) {
+    const status = this.getActualStatus(reservation)
+    const typeMap = {
+      'completed': 'info',      
+      'ongoing': 'warning',     
+      'booked': 'success',      
+      'cancelled': 'info'      
+    }
+    return typeMap[status] || 'info'
+  },
+
+
+  getDisplayStatusText(reservation) {
+    const status = this.getActualStatus(reservation)
+    const textMap = {
+      'completed': '已完成',
+      'ongoing': '进行中',
+      'booked': '已预约',
+      'cancelled': '已取消'
+    }
+    return textMap[status] || '未知'
+  }
+},
   
   watch: {
     value() {
@@ -340,25 +442,29 @@ export default {
   font-size: 14px;
   line-height: 14px;
   display: block;
-  margin: 2px auto;
+  margin: 0 auto;
   text-align: center;
 }
-
+::v-deep .el-calendar-table .el-calendar-day {
+  height: 100px !important;      
+}
 .calendar .chakan-btn {
   font-size: 14px;
   line-height: 14px;
-  margin-left: 45px;
-  text-align: center;
+  display: block;
+  margin: 0 auto;
   color: #67c23a !important;
 }
 
 .is-selected {
   color: #1989FA;
 }
+::v-deep .el-calendar-table td.is-today {
+  color: black !important;
 
-.el-backtop, .el-calendar-table td.is-today {
-  color: black;
 }
+
+
 
 .today-card {
   border: 1px solid #e4e7ed;

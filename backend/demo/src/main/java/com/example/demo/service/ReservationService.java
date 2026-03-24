@@ -109,4 +109,18 @@ public class ReservationService {
 
         return reservations;
     }
+
+    @Transactional
+    public int updateOngoingStatus() {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        return reservationDao.updateStatusToOngoing(today, now);
+    }
+
+    @Transactional
+    public int updateCompletedStatus() {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        return reservationDao.updateStatusToCompleted(today, now);
+    }
 }
