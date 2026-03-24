@@ -22,7 +22,6 @@
         <el-container>
             <el-header class="header">
                 <div class="header-left">
-                    <i class="el-icon-s-fold" @click="toggleMenu"></i>
                     <span class="page-title"> {{ pageTitle }}</span>
                 </div>
                 <div class="header-right">
@@ -49,7 +48,7 @@
         name:'userHomepage',
         data() {
             return {
-                username:'张三',
+                username:'',
                 activeMenu:'/user/calendar'
             }
         },
@@ -63,8 +62,12 @@
             }
         },
         methods:{
-            toggleMenu(){
-                console.log('折叠菜单')
+            getUserInfo(){
+                const userStr = localStorage.getItem('user')
+                if(userStr){
+                    const user = JSON.parse(userStr)
+                    this.username = user.name || user.username || '用户'
+                }
             },
             handleCommand(command){
                 if(command == 'logout'){
@@ -88,14 +91,17 @@
                 })
             },
         },
-         watch:{
+        watch:{
                 '$route.path':{
                     handler(path){
                         this.activeMenu = path
                     }
                 },
                 immediate:true
-            }
+        },
+        created() {
+            this.getUserInfo() 
+        }
     }
 </script>
 
