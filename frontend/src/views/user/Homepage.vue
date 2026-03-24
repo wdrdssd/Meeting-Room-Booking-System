@@ -49,7 +49,7 @@
         data() {
             return {
                 username:'',
-                activeMenu:'/user/calendar'
+                activeMenu:this.$route.path
             }
         },
         computed:{
