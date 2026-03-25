@@ -174,8 +174,8 @@ export default {
           if (res.code === 200) {
             this.$message.success('密码修改成功，请重新登录')
             this.editDialogVisible = false
-            localStorage.removeItem('token')
-            localStorage.removeItem('user')
+            sessionStorage.removeItem('token')
+            sessionStorage.removeItem('user')
             
             setTimeout(() => {
               this.$router.push('/login')
