@@ -40,4 +40,11 @@ public interface ReservationDao {
 
     @Update("UPDATE reservation SET status = #{status} WHERE id = #{id}")
     int updateStatus(@Param("id") Integer id, @Param("status") String status);
+
+    @Update("UPDATE reservation SET status = '0' " +
+            "WHERE status = '4' " +
+            "AND reserve_date < #{date} " +
+            "OR (reserve_date = #{date} AND start_time <= #{time})")
+    int cancelExpiredPending(@Param("date") LocalDate date,
+                             @Param("time") LocalTime time);
 }

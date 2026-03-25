@@ -166,4 +166,15 @@ public class ReservationService {
             reservationDao.updateStatus(reservationId, "0");
         }
     }
+
+    @Transactional
+    public int cancelExpiredPending() {
+        LocalDate today = LocalDate.now();
+        LocalTime now = LocalTime.now();
+        int rows = reservationDao.cancelExpiredPending(today, now);
+        if (rows > 0) {
+            System.out.println("自动取消了 " + rows + " 条超时未审批的预约");
+        }
+        return rows;
+    }
 }

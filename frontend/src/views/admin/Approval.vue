@@ -54,7 +54,7 @@
                 :page-sizes="[10, 20, 30]"
                 :page-size="pageSize"
                 layout="total, sizes, prev, pager, next"
-                :total="total"
+                :total="totalCount"
                 style="margin-top: 20px; text-align: right;">
             </el-pagination>
         </el-card>
@@ -81,7 +81,7 @@ import request from '@/utils/request';
                 if(this.statusFilter === 'pending'){
                     list = list.filter(item => item.status === '4')
                 }
-                list.sort((a, b) => new Date(b.reserveDate) - new Date(a.reserveDate))
+                list.sort((a, b) => new Date(a.reserveDate) - new Date(b.reserveDate))
       
                 const start = (this.currentPage - 1) * this.pageSize
                 const end = start + this.pageSize

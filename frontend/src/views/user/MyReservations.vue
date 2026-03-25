@@ -110,7 +110,7 @@ export default {
         list = list.filter(item => item.status === this.activeTab)
       }
 
-      list.sort((a, b) => new Date(b.reserveDate) - new Date(a.reserveDate))
+      list.sort((a, b) => new Date(a.reserveDate) - new Date(b.reserveDate))
   
       const start = (this.currentPage - 1) * this.pageSize
       const end = start + this.pageSize

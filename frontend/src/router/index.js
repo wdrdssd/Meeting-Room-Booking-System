@@ -38,7 +38,6 @@ const router = new VueRouter({
         { path:'/admin',component:()=>import('../views/admin/Homepage.vue'),
             children: [
                 { path: 'approvals', name: 'Approval', component: () => import('../views/admin/Approval.vue'),meta: { requiresAuth: true, requiresAdmin: true } },
-                { path: 'rooms', name: 'RoomManage', component: () => import('../views/admin/RoomManage.vue'),meta: { requiresAuth: true, requiresAdmin: true } },
                 { path: 'statistics', name: 'Statistics', component: () => import('../views/admin/Statistics.vue'),meta: { requiresAuth: true, requiresAdmin: true } },
                 { path: '', redirect: 'approvals' }
             ]
@@ -69,7 +68,7 @@ router.beforeEach((to, from, next) => {
 
     if (to.path === '/login' && isLoggedIn) {
         if (user.role === 1) {
-            next('/admin/rooms')
+            next('/admin/approvals')
         } else {
             next('/user/calendar')
         }
