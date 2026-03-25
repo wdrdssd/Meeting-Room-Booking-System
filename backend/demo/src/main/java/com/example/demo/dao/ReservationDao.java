@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -25,11 +24,20 @@ public interface ReservationDao {
     List<Reservation> selectByDate(@Param("startDate") LocalDate startDate,@Param("endDate") LocalDate endDate);
 
     @Update("update reservation SET status = '0' where id =#{id} and user_id = #{userId}")
-    int updateStatus(@Param("id") Integer id, @Param("userId") Long userId);
+    int cancelReservation(@Param("id") Integer id, @Param("userId") Long userId);
 
     @Update("update reservation set status = '2' where reserve_date = #{date} and start_time <= #{time} and end_time >= #{time} AND status = '1'")
     int updateStatusToOngoing(@Param("date") LocalDate date,@Param("time") LocalTime time);
 
     @Update("update reservation set status = '3' where reserve_date = #{date}  and end_time <= #{time} AND status IN ('1', '2')")
     int updateStatusToCompleted(@Param("date") LocalDate date,@Param("time") LocalTime time);
+
+    @Select("SELECT * FROM reservation ORDER BY reserve_date DESC, start_time DESC")
+    List<Reservation> selectAll();
+
+    @Select("SELECT * FROM reservation WHERE id = #{id}")
+    Reservation findById(@Param("id") Integer id);
+
+    @Update("UPDATE reservation SET status = #{status} WHERE id = #{id}")
+    int updateStatus(@Param("id") Integer id, @Param("status") String status);
 }

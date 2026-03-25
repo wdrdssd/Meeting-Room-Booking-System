@@ -90,5 +90,26 @@ public class ReservationController {
         List<Reservation> reservations = reservationService.getReservationsByMonth(year,month);
         return Result.success(reservations);
     }
+
+    @GetMapping("/all")
+    @Operation(summary = "获取所有预约（管理员）")
+    public Result<List<Reservation>> getAllReservations() {
+        List<Reservation> reservations = reservationService.getAllReservations();
+        return Result.success(reservations);
+    }
+
+    @PutMapping("/{id}/approve")
+    @Operation(summary = "审批预约（管理员）")
+    public Result<Void> approve(
+            @Parameter(description = "预约ID") @PathVariable Integer id,
+            @Parameter(description = "是否通过") @RequestParam boolean approve) {
+
+        try {
+            reservationService.approveReservation(id, approve);
+            return Result.success();
+        } catch (RuntimeException e) {
+            return Result.error(e.getMessage());
+        }
+    }
 }
 

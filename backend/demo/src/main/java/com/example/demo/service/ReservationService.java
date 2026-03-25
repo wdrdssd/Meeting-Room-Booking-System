@@ -85,7 +85,7 @@ public class ReservationService {
 
     @Transactional
     public boolean deleteReservation(Integer reservationId, Long userId) {
-        int rows = reservationDao.updateStatus(reservationId, userId);
+        int rows = reservationDao.cancelReservation(reservationId, userId);
         return rows > 0;
     }
 
@@ -122,5 +122,48 @@ public class ReservationService {
         LocalDate today = LocalDate.now();
         LocalTime now = LocalTime.now();
         return reservationDao.updateStatusToCompleted(today, now);
+    }
+
+    public List<Reservation> getAllReservations() {
+        List<Reservation> reservations = reservationDao.selectAll();
+
+        for (Reservation r : reservations) {
+            if (r.getUserId() != null) {
+                User user = userService.getUserById(r.getUserId());
+                r.setUserName(user != null ? user.getName() : "未知用户");
+            }
+            if (r.getRoomId() != null) {
+                try {
+                    String roomName = meetingRoomService.getMeetingRoomById(r.getRoomId()).getRoomName();
+                    r.setRoomName(roomName);
+                } catch (Exception e) {
+                    r.setRoomName("未知会议室");
+                }
+            }
+        }
+
+        return reservations;
+    }
+
+    @Transactional
+    public void approveReservation(Integer reservationId, boolean approve) {
+        Reservation reservation = reservationDao.findById(reservationId);
+        if (reservation == null) {
+            throw new RuntimeException("预约不存在");
+        }
+
+        if (!"4".equals(reservation.getStatus())) {
+            throw new RuntimeException("该预约已处理，无法再次审批");
+        }
+
+        if (approve) {
+            if (checkConfict(reservation.getRoomId(), reservation.getReserveDate(),
+                    reservation.getStartTime(), reservation.getEndTime())) {
+                throw new RuntimeException("该时段已被其他预约占用，审批失败");
+            }
+            reservationDao.updateStatus(reservationId, "1");
+        } else {
+            reservationDao.updateStatus(reservationId, "0");
+        }
     }
 }
