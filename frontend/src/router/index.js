@@ -10,25 +10,24 @@ const router = new VueRouter({
         { name:'login',path:'/login',component:()=>import('../views/user/Login.vue')},
         { path: '/', redirect: '/login' },
         { path:'/user',component:()=>import('../views/user/Homepage.vue'),
-            meta: { requiresAuth: true }, 
             children:[
                 {
                 path:'calendar',
                 name:'calendar',
                 component:()=>import('../views/user/Calendar.vue'),
-                meta: { requiresAuth: true, requiresAdmin: true }
+                meta: { requiresAuth: true }
                 },
                 {
                 path:'profile',
                 name:'profile',
                 component:()=>import('../views/user/Profile.vue'),
-                meta: { requiresAuth: true, requiresAdmin: true }
+                meta: { requiresAuth: true }
                 },
                 {
                 path:'my-reservations',
                 name:'MyReservations',
                 component:()=>import('../views/user/MyReservations.vue'),
-                meta: { requiresAuth: true, requiresAdmin: true }
+                meta: { requiresAuth: true }
                 },
                 {
                     path:'',
@@ -37,7 +36,6 @@ const router = new VueRouter({
             ]
         },
         { path:'/admin',component:()=>import('../views/admin/Homepage.vue'),
-            meta: { requiresAuth: true , requiresAdmin: true},
             children: [
                 { path: 'approvals', name: 'Approval', component: () => import('../views/admin/Approval.vue'),meta: { requiresAuth: true, requiresAdmin: true } },
                 { path: 'rooms', name: 'RoomManage', component: () => import('../views/admin/RoomManage.vue'),meta: { requiresAuth: true, requiresAdmin: true } },
@@ -50,38 +48,34 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token')
-  if (to.meta.requiresAuth) {
-    if (!token) {
-      next({
-        path: '/login',
-        query: { redirect: to.fullPath }  
-      })
-    } 
-    else if (to.meta.requiresAdmin) {
-      const userStr = localStorage.getItem('user')
-      const user = userStr ? JSON.parse(userStr) : null
-      if (!user || user.role !== 1) {
-        next('/user/calendar')
-      } else {
-        next()
-      }
-    } 
-    else {
-      next()
-    }
-  } 
-  else if (to.path === '/login' && token) {
-    const userStr = localStorage.getItem('user')
+    const token = sessionStorage.getItem('token')
+    const userStr = sessionStorage.getItem('user')
     const user = userStr ? JSON.parse(userStr) : null
-    if (user && user.role === 1) {
-      next('/admin/rooms')
-    } else {
-      next('/user/calendar')
+    
+    const isLoggedIn = !!token && user !== null
+
+    if (to.meta.requiresAuth && !isLoggedIn) {
+        next({
+            path: '/login',
+            query: { redirect: to.fullPath }
+        })
+        return
     }
-  } 
-  else {
+
+    if (to.meta.requiresAdmin && (!user || user.role !== 1)) {
+        next('/user/calendar')
+        return
+    }
+
+    if (to.path === '/login' && isLoggedIn) {
+        if (user.role === 1) {
+            next('/admin/rooms')
+        } else {
+            next('/user/calendar')
+        }
+        return
+    }
+
     next()
-  }
 })
 export default router

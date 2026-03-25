@@ -55,7 +55,7 @@ export default {
   },
   methods: {
     getUserInfo() {
-      const userStr = localStorage.getItem('user')
+      const userStr = sessionStorage.getItem('user')
       if (userStr) {
         const user = JSON.parse(userStr)
         this.username = user.name || user.username || '管理员'
@@ -72,8 +72,8 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        localStorage.removeItem('token')
-        localStorage.removeItem('user')
+        sessionStorage.removeItem('token')
+        sessionStorage.removeItem('user')
         this.$message.success('退出成功')
         this.$router.push('/login')
       }).catch(() => {})

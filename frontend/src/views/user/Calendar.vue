@@ -205,7 +205,7 @@ export default {
       return dateStr === this.todayStr
     },
     getCurrentUser() {
-      const userStr = localStorage.getItem('user')
+      const userStr = sessionStorage.getItem('user')
       if (userStr) {
         this.currentUser = JSON.parse(userStr)
         if (this.currentUser.name) {

@@ -49,8 +49,8 @@ export default {
             console.log('登录响应：', res)
             
             if (res.code === 200) {
-              localStorage.setItem('token', res.data.token)
-              localStorage.setItem('user', JSON.stringify(res.data.user))
+              sessionStorage.setItem('token', res.data.token)
+              sessionStorage.setItem('user', JSON.stringify(res.data.user))
               
               this.$message.success('登录成功')
 

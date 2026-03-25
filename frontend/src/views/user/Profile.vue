@@ -132,7 +132,7 @@ export default {
   
   methods: {
     getCurrentUser() {
-      const userStr = localStorage.getItem('user')
+      const userStr = sessionStorage.getItem('user')
       if (userStr) {
         this.userInfo = JSON.parse(userStr)
       }
