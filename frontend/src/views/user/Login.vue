@@ -55,7 +55,7 @@ export default {
               this.$message.success('登录成功')
 
               if (res.data.user.role === 1) {
-                this.$router.push('/admin/rooms')
+                this.$router.push('/admin/approvals')
               } else {
                 this.$router.push('/user/calendar')
               }

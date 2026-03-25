@@ -159,9 +159,9 @@ export default {
       const date = new Date()
       return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`
     },
-    oneMonthLater(){
+    oneWeekLater(){
       const date = new Date()
-      date.setMonth(date.getMonth() + 1)
+      date.setDate(date.getDate() + 7)
       return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
     },
     timePick(){
@@ -193,10 +193,10 @@ export default {
 
   methods: {
     canReserve(day){
-      if(day > this.oneMonthLater){
+      if(day < this.todayStr){
         return false
       }
-      if(day< this.todayStr){
+      if(day > this.oneWeekLater){
         return false
       }
       return true

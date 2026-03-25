@@ -5,13 +5,13 @@
         <h2>管理后台</h2>
       </div>
       <el-menu :default-active="activeMenu" class="menu" router background-color="#304156" text-color="#fff" active-text-color="#ffd046">
-        <el-menu-item index="/admin/rooms">
-          <i class="el-icon-office-building"></i>
-          <span>会议室管理</span>
-        </el-menu-item>
         <el-menu-item index="/admin/approvals">
           <i class="el-icon-check"></i>
           <span>预约审批</span>
+        </el-menu-item>
+        <el-menu-item index="/admin/rooms">
+          <i class="el-icon-office-building"></i>
+          <span>会议室管理</span>
         </el-menu-item>
         <el-menu-item index="/admin/statistics">
           <i class="el-icon-data-line"></i>
@@ -50,7 +50,7 @@ export default {
   data() {
     return {
       username: '',
-      activeMenu: '/admin/rooms'
+      activeMenu: '/admin/approvals'
     }
   },
   methods: {
@@ -82,8 +82,8 @@ export default {
   computed: {
     pageTitle() {
         const path = this.$route.path
-        if (path.includes('rooms')) return '会议室管理'
         if (path.includes('approvals')) return '预约审批'
+        if (path.includes('rooms')) return '会议室管理'
         if (path.includes('statistics')) return '数据统计'
         return '管理后台'
     }
