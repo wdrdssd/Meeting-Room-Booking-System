@@ -86,3 +86,5 @@ Desktop.ini
 .npm/
 .yarn/
 .pnpm/
+
+application-dev.yml
