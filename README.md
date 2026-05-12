@@ -32,11 +32,15 @@
 - Node.js 14+
 
 ### 1. 创建数据库
+
 CREATE DATABASE huiyishi CHARACTER SET utf8mb4;
+
 ### 2. 导入 SQL 文件
+
 项目根目录下的 huiyishi.sql
 
 ### 3. 修改数据库配置
+
 编辑 src/main/resources/application.properties：
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/huiyishi?useSSL=false&serverTimezone=Asia/Shanghai
@@ -44,6 +48,7 @@ spring.datasource.username=你的用户名
 spring.datasource.password=你的密码
 ```
 ### 4. 启动后端
+
 ```bash
 cd backend
 mvn spring-boot:run
@@ -51,6 +56,7 @@ mvn spring-boot:run
 后端运行在 http://localhost:8080
 
 ### 5. 启动前端
+
 ```bash
 cd frontend
 npm install
@@ -59,14 +65,16 @@ npm run serve
 前端运行在 http://localhost:8081
 
 ### 测试账号
+
 | 角色 | 用户名 | 密码 |
 |------|------|------|
-|普通用户|	张三|	123456|
+|普通用户|	zhangsan|	123456|
 |管理员|	admin	|123456|
 
 - 密码已通过 BCrypt加密存储
 
 ### 项目亮点
+
 - 预约冲突检测：同一会议室同一时间段不可重复预约
 
 - 审批流程：用户预约后状态为“待审批”，管理员通过后变为“已预约”，拒绝后变为“已取消”
@@ -78,6 +86,7 @@ npm run serve
 - 重新预约：用户可在“我的预约”页面携带原预约参数一键重新预约
 
 ### API 接口示例
+
 |方法|	路径|	说明|
 |------|------|------|
 |POST|	/api/login|	用户登录，返回 JWT Token|
